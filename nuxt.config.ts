@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxtjs/supabase'
   ],
+  plugins: ['~/plugins/aggrid.js'],
   supabase: {
     cookieOptions: {
       maxAge: 60 * 60 * 8,
