@@ -1,25 +1,18 @@
 <script setup>
 import { useSupabaseAuthClient } from "#supabase";
+const user = useSupabaseUser();
 const client = useSupabaseAuthClient();
 const router = useRouter();
 
-const email = ref("");
-const password = ref("");
-
-const errorMsg = ref(null);
-
-async function login() {
+async function logout() {
   try {
-    const { data, errors } = await client.auth.signInWithPassword({
-      email: email.value,
-      password: password.value,
-    });
+    const { errors } = await client.auth.signOut();
 
     if (errors) throw new Error(errors.message);
 
-    navigateTo("/profile");
+    navigateTo("/");
   } catch (error) {
-    errorMsg.value = error.message;
+    console.error(error.message);
   }
 }
 </script>
@@ -32,38 +25,16 @@ async function login() {
       <div
         class="flex-1 flex justify-center items-center border-r border-gray-300 p-4"
       >
-        <p class="text-center text-xl font-semibold">Benvenuto!</p>
+        <p class="text-center text-xl font-semibold">Your Profile!</p>
       </div>
       <div
         class="flex-1 flex flex-col justify-center items-center p-4 space-y-4"
       >
-        <div class="relative w-full max-w-xs">
-          <input
-            type="email"
-            class="p-2 border border-gray-300 rounded-md w-full pr-10"
-            v-model="email"
-          />
-          <Icon
-            name="ion:mail-outline"
-            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
-        </div>
-        <div class="relative w-full max-w-xs">
-          <input
-            type="password"
-            class="p-2 border border-gray-300 rounded-md w-full pr-10"
-            v-model="password"
-          />
-          <Icon
-            name="ion:eye-outline"
-            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
-        </div>
         <button
           class="bg-[#22543d] text-white font-bold py-2 px-3 rounded-full hover:bg-white hover:text-black hover:border hover:border-[#2a674a] transition-colors duration-300 w-full"
-          @click="login"
+          @click="logout"
         >
-          Accedi
+          Logout
         </button>
       </div>
     </div>

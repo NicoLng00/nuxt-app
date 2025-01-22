@@ -1,23 +1,20 @@
 <script setup>
 import { useSupabaseAuthClient } from "#supabase";
 const client = useSupabaseAuthClient();
-const router = useRouter();
 
 const email = ref("");
 const password = ref("");
 
-const errorMsg = ref(null);
-
-async function login() {
+async function register() {
   try {
-    const { data, errors } = await client.auth.signInWithPassword({
+    const { data, errors } = client.auth.signUp({
       email: email.value,
       password: password.value,
     });
 
     if (errors) throw new Error(errors.message);
 
-    navigateTo("/profile");
+    successMsg.value = "Registration successful!";
   } catch (error) {
     errorMsg.value = error.message;
   }
@@ -32,7 +29,7 @@ async function login() {
       <div
         class="flex-1 flex justify-center items-center border-r border-gray-300 p-4"
       >
-        <p class="text-center text-xl font-semibold">Benvenuto!</p>
+        <p class="text-center text-xl font-semibold">Registrati!</p>
       </div>
       <div
         class="flex-1 flex flex-col justify-center items-center p-4 space-y-4"
@@ -61,7 +58,7 @@ async function login() {
         </div>
         <button
           class="bg-[#22543d] text-white font-bold py-2 px-3 rounded-full hover:bg-white hover:text-black hover:border hover:border-[#2a674a] transition-colors duration-300 w-full"
-          @click="login"
+          @click="register"
         >
           Accedi
         </button>
