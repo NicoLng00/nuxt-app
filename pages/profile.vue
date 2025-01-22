@@ -4,6 +4,10 @@ const user = useSupabaseUser();
 const client = useSupabaseAuthClient();
 const router = useRouter();
 
+definePageMeta({
+  middleware: ['auth']
+})
+
 async function logout() {
   try {
     const { errors } = await client.auth.signOut();

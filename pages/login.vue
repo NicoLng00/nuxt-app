@@ -5,21 +5,28 @@ const router = useRouter();
 
 const email = ref("");
 const password = ref("");
-
 const errorMsg = ref(null);
+const isLoading = ref(false);
 
 async function login() {
   try {
-    const { data, errors } = await client.auth.signInWithPassword({
+    isLoading.value = true;
+    errorMsg.value = null;
+    
+    const { data, error } = await client.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     });
 
-    if (errors) throw new Error(errors.message);
+    if (error) throw error;
 
-    navigateTo("/profile");
+    if (data.user) {
+      await navigateTo("/profile");
+    }
   } catch (error) {
     errorMsg.value = error.message;
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>
@@ -37,6 +44,7 @@ async function login() {
       <div
         class="flex-1 flex flex-col justify-center items-center p-4 space-y-4"
       >
+        <div v-if="errorMsg" class="text-red-500 text-sm mb-2">{{ errorMsg }}</div>
         <div class="relative w-full max-w-xs">
           <input
             type="email"
@@ -62,9 +70,16 @@ async function login() {
         <button
           class="bg-[#22543d] text-white font-bold py-2 px-3 rounded-full hover:bg-white hover:text-black hover:border hover:border-[#2a674a] transition-colors duration-300 w-full"
           @click="login"
+          :disabled="isLoading"
         >
-          Accedi
+          {{ isLoading ? 'Caricamento...' : 'Accedi' }}
         </button>
+        <div class="text-sm text-gray-600">
+          Non hai un account? 
+          <NuxtLink to="/register" class="text-[#22543d] hover:underline">
+            Registrati
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </div>

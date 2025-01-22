@@ -1,20 +1,30 @@
 <script setup>
 import { useSupabaseAuthClient } from "#supabase";
+import { useRouter } from "vue-router";
+
 const client = useSupabaseAuthClient();
+const router = useRouter();
 
 const email = ref("");
 const password = ref("");
+const errorMsg = ref(null);
+const successMsg = ref(null);
 
 async function register() {
   try {
-    const { data, errors } = client.auth.signUp({
+    const { data, error } = await client.auth.signUp({
       email: email.value,
       password: password.value,
     });
 
-    if (errors) throw new Error(errors.message);
+    if (error) throw error;
 
-    successMsg.value = "Registration successful!";
+    if (data.user) {
+      successMsg.value = "Registrazione completata! Controlla la tua email per verificare l'account.";
+      setTimeout(() => {
+        navigateTo('/login');
+      }, 2000);
+    }
   } catch (error) {
     errorMsg.value = error.message;
   }
@@ -34,6 +44,8 @@ async function register() {
       <div
         class="flex-1 flex flex-col justify-center items-center p-4 space-y-4"
       >
+        <div v-if="errorMsg" class="text-red-500 text-sm mb-2">{{ errorMsg }}</div>
+        <div v-if="successMsg" class="text-green-500 text-sm mb-2">{{ successMsg }}</div>
         <div class="relative w-full max-w-xs">
           <input
             type="email"
